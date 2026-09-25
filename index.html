@@ -2,10 +2,103 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <title>Analisi</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analisi Specifiche Prodotto</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f6f8; color: #333; }
+        h1, h2 { color: #232f3e; }
+        .search-box { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 25px; }
+        .input-group { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
+        input[type="text"] { flex: 1; min-width: 200px; padding: 10px; border: 1px solid #ccc; border-radius: 4px; }
+        button { padding: 10px 15px; border: none; background-color: #ff9900; color: white; font-weight: bold; border-radius: 4px; cursor: pointer; }
+        button:hover { background-color: #e68a00; }
+        button.google { background-color: #4285f4; }
+        button.google:hover { background-color: #357ae8; }
+        
+        .table-container { overflow-x: auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; }
+        th, td { padding: 12px; border-bottom: 1px solid #ddd; }
+        th { background-color: #232f3e; color: white; white-space: nowrap; }
+        tr:hover { background-color: #f1f1f1; }
+        img.prod-img { width: 60px; height: 60px; object-fit: cover; border-radius: 4px; }
+    </style>
 </head>
 <body>
-    <h1>Sito Analisi</h1>
-    <p>Benvenuto sul sito!</p>
+
+    <h1>Analisi Specifiche Prodotti</h1>
+
+    <!-- MOTORE DI RICERCA -->
+    <div class="search-box">
+        <h2>Ricerca Rapida Prodotto / Codice (SP)</h2>
+        <p>Inserisci il nome del prodotto, il codice SP o l'ASIN di Amazon:</p>
+        <div class="input-group">
+            <input type="text" id="searchTerm" placeholder="Es. B08N5WRWNW oppure Nome Prodotto SP123">
+            <button onclick="searchAmazon()">Cerca su Amazon</button>
+            <button class="google" onclick="searchGoogle()">Cerca sul Web (Google)</button>
+        </div>
+    </div>
+
+    <!-- TABELLA DATI PRODOTTI -->
+    <h2>Scheda Analisi Prodotti</h2>
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Foto</th>
+                    <th>Nome Prodotto + Codice (SP)</th>
+                    <th>Brand</th>
+                    <th>Prezzo</th>
+                    <th>Pezzi/Mese</th>
+                    <th>Pezzi/Giorno</th>
+                    <th>Recensioni Medie</th>
+                    <th>Posizione su Amazon</th>
+                    <th>Ricavi Mensili</th>
+                    <th>1ª Disponibilità</th>
+                    <th>Costi Amazon (Fees)</th>
+                    <th>Net Revenue / Guadagni</th>
+                    <th>Categoria</th>
+                    <th>Dimensioni / Peso</th>
+                    <th>N° Venditori</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- ESEMPIO RIGA DATI -->
+                <tr>
+                    <td><img src="https://via.placeholder.com/60" alt="Prodotto" class="prod-img"></td>
+                    <td>Esempio Prodotto <br><small>(SP-001)</small></td>
+                    <td>MarcaEsempio</td>
+                    <td>€ 19,99</td>
+                    <td>300</td>
+                    <td>10</td>
+                    <td>4.5 ★</td>
+                    <td>Pagina 1 - Pos. 3</td>
+                    <td>€ 5.997</td>
+                    <td>15/01/2024</td>
+                    <td>€ 5,20</td>
+                    <td>€ 8,50</td>
+                    <td>Casa e Cucina</td>
+                    <td>20x10x5 cm / 0.5 kg</td>
+                    <td>1</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        function searchAmazon() {
+            const query = document.getElementById('searchTerm').value;
+            if (query) {
+                window.open(`https://www.amazon.it/s?k=${encodeURIComponent(query)}`, '_blank');
+            }
+        }
+
+        function searchGoogle() {
+            const query = document.getElementById('searchTerm').value;
+            if (query) {
+                window.open(`https://www.google.com/search?q=${encodeURIComponent(query)}`, '_blank');
+            }
+        }
+    </script>
+
 </body>
 </html>
