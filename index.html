@@ -3,100 +3,242 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Analisi Specifiche Prodotto</title>
+    <title>Analisi Specifiche Prodotti</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f6f8; color: #333; }
-        h1, h2 { color: #232f3e; }
-        .search-box { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 25px; }
-        .input-group { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
-        input[type="text"] { flex: 1; min-width: 200px; padding: 10px; border: 1px solid #ccc; border-radius: 4px; }
-        button { padding: 10px 15px; border: none; background-color: #ff9900; color: white; font-weight: bold; border-radius: 4px; cursor: pointer; }
+        * { box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 20px; background-color: #f4f6f8; color: #333; }
+        h1, h2 { color: #232f3e; margin-top: 0; }
+        
+        .card { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.08); margin-bottom: 25px; }
+        
+        .search-group { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+        input[type="text"], input[type="number"], input[type="date"], select { padding: 8px 12px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
+        .search-group input { flex: 1; min-width: 200px; }
+        
+        button { padding: 9px 15px; border: none; background-color: #ff9900; color: white; font-weight: bold; border-radius: 4px; cursor: pointer; transition: background 0.2s; }
         button:hover { background-color: #e68a00; }
         button.google { background-color: #4285f4; }
         button.google:hover { background-color: #357ae8; }
+        button.add-btn { background-color: #28a745; width: 100%; margin-top: 15px; font-size: 16px; padding: 12px; }
+        button.add-btn:hover { background-color: #218838; }
+        button.delete-btn { background-color: #dc3545; padding: 5px 10px; font-size: 12px; }
+        button.delete-btn:hover { background-color: #c82333; }
+
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-top: 15px; }
+        .form-field { display: flex; flex-direction: column; }
+        .form-field label { font-size: 12px; font-weight: bold; margin-bottom: 4px; color: #555; }
         
-        .table-container { overflow-x: auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; }
-        th, td { padding: 12px; border-bottom: 1px solid #ddd; }
-        th { background-color: #232f3e; color: white; white-space: nowrap; }
-        tr:hover { background-color: #f1f1f1; }
-        img.prod-img { width: 60px; height: 60px; object-fit: cover; border-radius: 4px; }
+        .table-container { overflow-x: auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.08); }
+        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; }
+        th, td { padding: 10px; border-bottom: 1px solid #eee; vertical-align: middle; }
+        th { background-color: #232f3e; color: white; white-space: nowrap; font-weight: 600; }
+        tr:hover { background-color: #f8f9fa; }
+        img.prod-img { width: 50px; height: 50px; object-fit: cover; border-radius: 4px; border: 1px solid #ddd; }
+        
+        .badge-calc { background-color: #e8f4fd; color: #1a73e8; font-weight: bold; padding: 2px 6px; border-radius: 4px; display: inline-block; }
+        .badge-profit { background-color: #e6f4ea; color: #137333; font-weight: bold; padding: 2px 6px; border-radius: 4px; display: inline-block; }
     </style>
 </head>
 <body>
 
-    <h1>Analisi Specifiche Prodotti</h1>
+    <h1>Dashboard Analisi Specifiche Prodotti</h1>
 
     <!-- MOTORE DI RICERCA -->
-    <div class="search-box">
-        <h2>Ricerca Rapida Prodotto / Codice (SP)</h2>
-        <p>Inserisci il nome del prodotto, il codice SP o l'ASIN di Amazon:</p>
-        <div class="input-group">
-            <input type="text" id="searchTerm" placeholder="Es. B08N5WRWNW oppure Nome Prodotto SP123">
+    <div class="card">
+        <h2>Motore di Ricerca Rapido</h2>
+        <div class="search-group">
+            <input type="text" id="searchTerm" placeholder="Inserisci Nome Prodotto, Codice SP o ASIN Amazon...">
             <button onclick="searchAmazon()">Cerca su Amazon</button>
-            <button class="google" onclick="searchGoogle()">Cerca sul Web (Google)</button>
+            <button class="google" onclick="searchGoogle()">Cerca su Google</button>
         </div>
     </div>
 
-    <!-- TABELLA DATI PRODOTTI -->
-    <h2>Scheda Analisi Prodotti</h2>
+    <!-- MODULO INSERIMENTO PRODOTTO -->
+    <div class="card">
+        <h2>Aggiungi Nuovo Prodotto all'Analisi</h2>
+        <form id="productForm" onsubmit="addProduct(event)">
+            <div class="form-grid">
+                <div class="form-field">
+                    <label>URL Immagine (Foto)</label>
+                    <input type="text" id="pImg" placeholder="https://link-immagine.jpg">
+                </div>
+                <div class="form-field">
+                    <label>Nome Prodotto + Codice (SP)*</label>
+                    <input type="text" id="pName" required placeholder="Es. Organizer Casa (SP001)">
+                </div>
+                <div class="form-field">
+                    <label>Brand</label>
+                    <input type="text" id="pBrand" placeholder="Es. Nike / Generic">
+                </div>
+                <div class="form-field">
+                    <label>Prezzo (€)*</label>
+                    <input type="number" id="pPrice" step="0.01" required placeholder="19.99">
+                </div>
+                <div class="form-field">
+                    <label>Costo Prodotto / COGS (€)</label>
+                    <input type="number" id="pCost" step="0.01" placeholder="4.50">
+                </div>
+                <div class="form-field">
+                    <label>Costi Amazon / Fees (€)</label>
+                    <input type="number" id="pFees" step="0.01" placeholder="5.20">
+                </div>
+                <div class="form-field">
+                    <label>Pezzi Venduti al Mese*</label>
+                    <input type="number" id="pMonthlySales" required placeholder="300">
+                </div>
+                <div class="form-field">
+                    <label>Recensioni Medie (★)</label>
+                    <input type="text" id="pRating" placeholder="Es. 4.5 (120 recensioni)">
+                </div>
+                <div class="form-field">
+                    <label>Dove si trova su Amazon</label>
+                    <input type="text" id="pLocation" placeholder="Es. Pag. 1 - Posiz. 3">
+                </div>
+                <div class="form-field">
+                    <label>1ª Disponibilità su Amazon</label>
+                    <input type="date" id="pDate">
+                </div>
+                <div class="form-field">
+                    <label>Categoria</label>
+                    <input type="text" id="pCategory" placeholder="Es. Casa e cucina">
+                </div>
+                <div class="form-field">
+                    <label>Dimensioni / Peso</label>
+                    <input type="text" id="pSpecs" placeholder="Es. 20x10 cm / 0.5 kg">
+                </div>
+                <div class="form-field">
+                    <label>Quanti Venditori</label>
+                    <input type="number" id="pSellers" placeholder="1">
+                </div>
+            </div>
+            <button type="submit" class="add-btn">+ Aggiungi alla Tabella</button>
+        </form>
+    </div>
+
+    <!-- TABELLA PRODOTTI -->
+    <h2>Prodotti Analizzati</h2>
     <div class="table-container">
         <table>
             <thead>
                 <tr>
                     <th>Foto</th>
-                    <th>Nome Prodotto + Codice (SP)</th>
+                    <th>Nome + Codice (SP)</th>
                     <th>Brand</th>
                     <th>Prezzo</th>
                     <th>Pezzi/Mese</th>
                     <th>Pezzi/Giorno</th>
-                    <th>Recensioni Medie</th>
-                    <th>Posizione su Amazon</th>
+                    <th>Recensioni</th>
+                    <th>Posizione Amazon</th>
                     <th>Ricavi Mensili</th>
                     <th>1ª Disponibilità</th>
-                    <th>Costi Amazon (Fees)</th>
-                    <th>Net Revenue / Guadagni</th>
+                    <th>Fees Amazon</th>
+                    <th>Net Revenue (Utile/pz)</th>
                     <th>Categoria</th>
-                    <th>Dimensioni / Peso</th>
-                    <th>N° Venditori</th>
+                    <th>Dimensioni/Peso</th>
+                    <th>Venditori</th>
+                    <th>Azione</th>
                 </tr>
             </thead>
-            <tbody>
-                <!-- ESEMPIO RIGA DATI -->
-                <tr>
-                    <td><img src="https://via.placeholder.com/60" alt="Prodotto" class="prod-img"></td>
-                    <td>Esempio Prodotto <br><small>(SP-001)</small></td>
-                    <td>MarcaEsempio</td>
-                    <td>€ 19,99</td>
-                    <td>300</td>
-                    <td>10</td>
-                    <td>4.5 ★</td>
-                    <td>Pagina 1 - Pos. 3</td>
-                    <td>€ 5.997</td>
-                    <td>15/01/2024</td>
-                    <td>€ 5,20</td>
-                    <td>€ 8,50</td>
-                    <td>Casa e Cucina</td>
-                    <td>20x10x5 cm / 0.5 kg</td>
-                    <td>1</td>
-                </tr>
+            <tbody id="productTableBody">
+                <!-- I dati dinamici verranno inseriti qui dal Javascript -->
             </tbody>
         </table>
     </div>
 
     <script>
+        // Carica i prodotti salvati all'avvio
+        document.addEventListener('DOMContentLoaded', loadProducts);
+
         function searchAmazon() {
             const query = document.getElementById('searchTerm').value;
-            if (query) {
-                window.open(`https://www.amazon.it/s?k=${encodeURIComponent(query)}`, '_blank');
-            }
+            if (query) window.open(`https://www.amazon.it/s?k=${encodeURIComponent(query)}`, '_blank');
         }
 
         function searchGoogle() {
             const query = document.getElementById('searchTerm').value;
-            if (query) {
-                window.open(`https://www.google.com/search?q=${encodeURIComponent(query)}`, '_blank');
+            if (query) window.open(`https://www.google.com/search?q=${encodeURIComponent(query)}`, '_blank');
+        }
+
+        function addProduct(e) {
+            e.preventDefault();
+
+            const price = parseFloat(document.getElementById('pPrice').value) || 0;
+            const cost = parseFloat(document.getElementById('pCost').value) || 0;
+            const fees = parseFloat(document.getElementById('pFees').value) || 0;
+            const monthlySales = parseInt(document.getElementById('pMonthlySales').value) || 0;
+
+            // Calcoli automatici
+            const dailySales = (monthlySales / 30).toFixed(1);
+            const monthlyRevenue = (price * monthlySales).toFixed(2);
+            const netRevenue = (price - fees - cost).toFixed(2);
+
+            const product = {
+                id: Date.now(),
+                img: document.getElementById('pImg').value || 'https://via.placeholder.com/50?text=No+Foto',
+                name: document.getElementById('pName').value,
+                brand: document.getElementById('pBrand').value || '-',
+                price: price.toFixed(2),
+                monthlySales: monthlySales,
+                dailySales: dailySales,
+                rating: document.getElementById('pRating').value || '-',
+                location: document.getElementById('pLocation').value || '-',
+                monthlyRevenue: monthlyRevenue,
+                date: document.getElementById('pDate').value || '-',
+                fees: fees.toFixed(2),
+                netRevenue: netRevenue,
+                category: document.getElementById('pCategory').value || '-',
+                specs: document.getElementById('pSpecs').value || '-',
+                sellers: document.getElementById('pSellers').value || '1'
+            };
+
+            let products = JSON.parse(localStorage.getItem('myProducts')) || [];
+            products.push(product);
+            localStorage.setItem('myProducts', JSON.stringify(products));
+
+            document.getElementById('productForm').reset();
+            loadProducts();
+        }
+
+        function loadProducts() {
+            const tbody = document.getElementById('productTableBody');
+            tbody.innerHTML = '';
+            
+            let products = JSON.parse(localStorage.getItem('myProducts')) || [];
+
+            if (products.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="16" style="text-align:center; padding: 20px; color: #777;">Nessun prodotto inserito. Usa il modulo sopra per aggiungere il primo prodotto!</td></tr>`;
+                return;
             }
+
+            products.forEach(p => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><img src="${p.img}" class="prod-img" onerror="this.src='https://via.placeholder.com/50?text=Error'"></td>
+                    <td><strong>${p.name}</strong></td>
+                    <td>${p.brand}</td>
+                    <td>€ ${p.price}</td>
+                    <td>${p.monthlySales}</td>
+                    <td><span class="badge-calc">${p.dailySales} /gg</span></td>
+                    <td>${p.rating}</td>
+                    <td>${p.location}</td>
+                    <td><span class="badge-calc">€ ${p.monthlyRevenue}</span></td>
+                    <td>${p.date}</td>
+                    <td>€ ${p.fees}</td>
+                    <td><span class="badge-profit">€ ${p.netRevenue}</span></td>
+                    <td>${p.category}</td>
+                    <td>${p.specs}</td>
+                    <td>${p.sellers}</td>
+                    <td><button class="delete-btn" onclick="deleteProduct(${p.id})">Elimina</button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function deleteProduct(id) {
+            let products = JSON.parse(localStorage.getItem('myProducts')) || [];
+            products = products.filter(p => p.id !== id);
+            localStorage.setItem('myProducts', JSON.stringify(products));
+            loadProducts();
         }
     </script>
 
